@@ -60,11 +60,11 @@ class Order(object):
 T = typing.TypeVar("T")
 
 
-def insertion_sort(container: list[T], el: T, key_comparison: typing.Callable[[T], typing.Any]) -> None:
+def insertion_sort(container: list[T], el: T,
+                   key_comparison: typing.Callable[[T], typing.Any]) -> None:
     # TODO: do your insertion sort algorithm here
-    # put el into container
-    pass
 
+    # ! DO NOT USE BUILT IN SORT, THIS IS FOR DEMO ONLY
     container.append(el)
     container.sort(key=key_comparison)
 
@@ -81,19 +81,23 @@ class Market(object):
         desired_price = incoming_order.price
         if incoming_order.order_type == OrderType.ORDER_TYPE_BUY:
             # if is a buy order, user is expecting cheapest sell order
-            if len(self.sell_orders) > 0 and desired_price >= self.sell_orders[0].price:
+            if len(self.sell_orders
+                   ) > 0 and desired_price >= self.sell_orders[0].price:
                 # cheers, you made a deal
                 self.sell_orders.pop(0)
             else:
-                insertion_sort(self.buy_orders, incoming_order, lambda o: o.price)
+                insertion_sort(self.buy_orders, incoming_order,
+                               lambda o: o.price)
 
         elif incoming_order.order_type == OrderType.ORDER_TYPE_SELL:
             # if is a sell order, user is expected highest paid buyer
-            if len(self.buy_orders) > 0 and desired_price <= self.buy_orders[len(self.buy_orders) - 1].price:
+            if len(self.buy_orders) > 0 and desired_price <= self.buy_orders[
+                    len(self.buy_orders) - 1].price:
                 # cheers,  you made a deal
                 self.buy_orders.pop(-1)
             else:
-                insertion_sort(self.sell_orders, incoming_order, lambda o: o.price)
+                insertion_sort(self.sell_orders, incoming_order,
+                               lambda o: o.price)
 
 
 @dataclasses.dataclass
@@ -106,47 +110,49 @@ class User(IUser):
         to get the real order with buy api
         """
         self.market.transaction(
-            incoming_order=Order(
-                price=price, order_type=OrderType.ORDER_TYPE_BUY, user=self, order_time=datetime.now()
-            )
-        )
+            incoming_order=Order(price=price,
+                                 order_type=OrderType.ORDER_TYPE_BUY,
+                                 user=self,
+                                 order_time=datetime.now()))
 
     def sell(self, price: float) -> None:
         """sell buy"""
         self.market.transaction(
-            incoming_order=Order(
-                price=price, order_type=OrderType.ORDER_TYPE_SELL, user=self, order_time=datetime.now()
-            )
-        )
+            incoming_order=Order(price=price,
+                                 order_type=OrderType.ORDER_TYPE_SELL,
+                                 user=self,
+                                 order_time=datetime.now()))
 
 
-# do your game
-m = Market()
+if __name__ == "__main__":
 
-user1 = User(uid="000001", meta={"username": "user1"}, market=m)
-user2 = User(uid="000002", meta={"username": "user2"}, market=m)
+    # do your game
+    m = Market()
 
-user1.sell(10)
-print("buys = ", m.buy_orders)
-print("sells = ", m.sell_orders)
+    user1 = User(uid="000001", meta={"username": "user1"}, market=m)
+    user2 = User(uid="000002", meta={"username": "user2"}, market=m)
 
-user2.buy(11)
+    user1.sell(10)
+    print("buys = ", m.buy_orders)
+    print("sells = ", m.sell_orders)
 
-print("buys = ", m.buy_orders)
-print("sells = ", m.sell_orders)
+    user2.buy(11)
 
-user1.sell(100)
-print("buys = ", m.buy_orders)
-print("sells = ", m.sell_orders)
+    print("buys = ", m.buy_orders)
+    print("sells = ", m.sell_orders)
 
-user2.buy(99)
-print("buys = ", m.buy_orders)
-print("sells = ", m.sell_orders)
+    user1.sell(100)
+    print("buys = ", m.buy_orders)
+    print("sells = ", m.sell_orders)
 
-user2.buy(101)
-print("buys = ", m.buy_orders)
-print("sells = ", m.sell_orders)
+    user2.buy(99)
+    print("buys = ", m.buy_orders)
+    print("sells = ", m.sell_orders)
 
-user1.sell(98)
-print("buys = ", m.buy_orders)
-print("sells = ", m.sell_orders)
+    user2.buy(101)
+    print("buys = ", m.buy_orders)
+    print("sells = ", m.sell_orders)
+
+    user1.sell(98)
+    print("buys = ", m.buy_orders)
+    print("sells = ", m.sell_orders)
